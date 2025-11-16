@@ -44,7 +44,7 @@ function AppLayout() {
         </nav>
         {isAuthenticated && (
           <div className="user-menu">
-            <span>{user?.email}</span>
+            <span>{"Welcome, " + user?.name}</span>
             <button onClick={logout}>Logout</button>
           </div>
         )}

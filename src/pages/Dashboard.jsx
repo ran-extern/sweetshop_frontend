@@ -228,6 +228,9 @@ export default function DashboardPage() {
       </button>
 
       <aside id="cart-panel" className={`panel cart-panel floating ${cartOpen ? 'open' : ''}`} aria-hidden={!cartOpen}>
+        <button className="cart-close" type="button" aria-label="Close cart" onClick={() => setCartOpen(false)}>
+          ×
+        </button>
         <div className="panel-header cart-panel-header">
           <div>
             <h2>Your cart</h2>
@@ -239,9 +242,6 @@ export default function DashboardPage() {
                 Clear
               </button>
             )}
-            <button className="cart-close" type="button" aria-label="Close cart" onClick={() => setCartOpen(false)}>
-              ×
-            </button>
           </div>
         </div>
 
