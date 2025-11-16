@@ -4,7 +4,10 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { beforeAll, afterAll, afterEach, describe, it, expect } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
+import * as api from '../lib/api';
 import { AuthProvider, useAuth } from '../../src/contexts/AuthContext';
+
+const API_BASE = api.API_BASE_URL.replace(/\/+$/, '');
 
 // simple test consumer
 function TestConsumer({ creds = { email: 'jdoe@example.com', password: 'pass' } }) {
@@ -24,7 +27,7 @@ const sampleUser = { id: 1, username: 'jdoe', email: 'jdoe@example.com', role: '
 const sampleTokens = { access: 'access_v1', refresh: 'refresh_v1' };
 
 const server = setupServer(
-  http.post('http://localhost:8000/api/auth/login/', () => {
+  http.post(`${API_BASE}/auth/login/`, () => {
     return HttpResponse.json({ user: sampleUser, tokens: sampleTokens }, { status: 200 });
   })
 );
@@ -62,7 +65,7 @@ describe('AuthContext integration', () => {
 
   it('sets isAdmin when logged in user role is admin', async () => {
     server.use(
-      http.post('http://localhost:8000/api/auth/login/', () => {
+      http.post(`${API_BASE}/auth/login/`, () => {
         return HttpResponse.json({ user: { ...sampleUser, role: 'admin', username: 'boss' }, tokens: sampleTokens }, { status: 200 });
       })
     );
@@ -75,6 +78,7 @@ describe('AuthContext integration', () => {
 
     fireEvent.click(screen.getByText('login'));
     await waitFor(() => expect(screen.getByTestId('auth-status').textContent).toBe('yes'));
+    expect(screen.getByTestId('user').textContent).toBe('boss');
     expect(screen.getByTestId('admin').textContent).toBe('yes');
   });
 });

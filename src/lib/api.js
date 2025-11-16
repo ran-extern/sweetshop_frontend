@@ -1,15 +1,17 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
-// Base URL (use Vite env or default)
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/';
+const envBase = import.meta.env.VITE_API_BASE_URL;
+const fallbackBase = 'http://127.0.0.1:8000/api/';
+const normalizedBase = envBase ? (envBase.endsWith('/') ? envBase : `${envBase}/`) : fallbackBase;
+export const API_BASE_URL = normalizedBase;
 
 const ACCESS_KEY = 'access_token';
 const REFRESH_KEY = 'refresh_token';
 const USER_KEY = 'user_profile';
 
 const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: API_BASE_URL,
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
@@ -90,9 +92,7 @@ async function refreshAccessToken() {
   const refresh = getRefreshToken();
   if (!refresh) throw new Error('No refresh token available');
 
-  // POST to /api/auth/token/refresh/
-  const url = `${BASE_URL.replace(/\/+$/, '')}/api/auth/token/refresh/`;
-  const resp = await axios.post(url, { refresh }, { headers: { 'Content-Type': 'application/json', Accept: 'application/json' } });
+  const resp = await axios.post(`${API_BASE_URL}auth/token/refresh/`, { refresh }, { headers: { 'Content-Type': 'application/json', Accept: 'application/json' } });
   const { access, refresh: newRefresh } = resp.data;
   setTokens({ access, refresh: newRefresh || refresh });
   return access;
@@ -138,27 +138,27 @@ api.interceptors.response.use(
 
 // Sweets API helpers
 export async function listSweets(params = {}) {
-  const resp = await api.get('/api/sweets/', { params });
+  const resp = await api.get('sweets/', { params });
   return resp.data;
 }
 
 export async function getSweet(id) {
-  const resp = await api.get(`/api/sweets/${id}/`);
+  const resp = await api.get(`sweets/${id}/`);
   return resp.data;
 }
 
 export async function createSweet(payload) {
-  const resp = await api.post('/api/sweets/', payload);
+  const resp = await api.post('sweets/', payload);
   return resp.data;
 }
 
 export async function updateSweet(id, payload) {
-  const resp = await api.patch(`/api/sweets/${id}/`, payload);
+  const resp = await api.patch(`sweets/${id}/`, payload);
   return resp.data;
 }
 
 export async function deleteSweet(id) {
-  await api.delete(`/api/sweets/${id}/`);
+  await api.delete(`sweets/${id}/`);
   return true;
 }
 
@@ -168,23 +168,23 @@ export async function searchSweets({ name, category, min_price, max_price } = {}
   if (category) params.category = category;
   if (min_price !== undefined) params.min_price = String(min_price);
   if (max_price !== undefined) params.max_price = String(max_price);
-  const resp = await api.get('/api/sweets/search/', { params });
+  const resp = await api.get('sweets/search/', { params });
   return resp.data;
 }
 
 export async function purchaseSweet(id, quantity) {
-  const resp = await api.post(`/api/sweets/${id}/purchase/`, { quantity });
+  const resp = await api.post(`sweets/${id}/purchase/`, { quantity });
   return resp.data;
 }
 
 export async function restockSweet(id, quantity) {
-  const resp = await api.post(`/api/sweets/${id}/restock/`, { quantity });
+  const resp = await api.post(`sweets/${id}/restock/`, { quantity });
   return resp.data;
 }
 
 // Auth helpers
 export async function login({ email, password }) {
-  const resp = await api.post('/api/auth/login/', { email, password });
+  const resp = await api.post('auth/login/', { email, password });
   const { tokens, user } = resp.data;
   setTokens(tokens);
   cacheUserProfile(user);
@@ -192,7 +192,7 @@ export async function login({ email, password }) {
 }
 
 export async function register({ username, email, password }) {
-  const resp = await api.post('/api/auth/register/', { username, email, password });
+  const resp = await api.post('auth/register/', { username, email, password });
   const { tokens, user } = resp.data;
   setTokens(tokens);
   cacheUserProfile(user);

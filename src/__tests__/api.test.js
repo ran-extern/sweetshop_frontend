@@ -3,6 +3,8 @@ import { setupServer } from 'msw/node';
 import { beforeAll, afterAll, afterEach, describe, it, expect } from 'vitest';
 import * as api from '../lib/api';
 
+const API_BASE = api.API_BASE_URL.replace(/\/+$/, '');
+
 const sampleUser = { id: 1, username: 'jdoe', email: 'jdoe@example.com', role: 'customer' };
 const sampleAdmin = { id: 2, username: 'admin', email: 'admin@example.com', role: 'admin' };
 const sampleTokens = { access: 'access_v1', refresh: 'refresh_v1' };
@@ -12,24 +14,24 @@ let lastRegisterBody = null;
 
 const server = setupServer(
   // login
-  http.post('http://localhost:8000/api/auth/login/', async ({ request }) => {
+  http.post(`${API_BASE}/auth/login/`, async ({ request }) => {
     lastLoginBody = await request.json();
     return HttpResponse.json({ user: sampleUser, tokens: sampleTokens }, { status: 200 });
   }),
 
   // register
-  http.post('http://localhost:8000/api/auth/register/', async ({ request }) => {
+  http.post(`${API_BASE}/auth/register/`, async ({ request }) => {
     lastRegisterBody = await request.json();
     return HttpResponse.json({ user: sampleUser, tokens: sampleTokens }, { status: 201 });
   }),
 
   // refresh endpoint: returns new access
-  http.post('http://localhost:8000/api/auth/token/refresh/', () => {
+  http.post(`${API_BASE}/auth/token/refresh/`, () => {
     return HttpResponse.json({ access: 'access_v2' }, { status: 200 });
   }),
 
   // sweets list: if Authorization contains access_v1 -> 401, if access_v2 -> 200 with data
-  http.get('http://localhost:8000/api/sweets/', ({ request }) => {
+  http.get(`${API_BASE}/sweets/`, ({ request }) => {
     const auth = request.headers.get('authorization') || '';
     if (auth.includes('access_v1')) {
       return HttpResponse.json({ detail: 'token_expired' }, { status: 401 });
@@ -92,7 +94,7 @@ describe('api client - auth and refresh flows', () => {
     localStorage.setItem('refresh_token', 'refresh_v1');
 
     server.use(
-      http.post('http://localhost:8000/api/auth/token/refresh/', () => {
+  http.post(`${API_BASE}/auth/token/refresh/`, () => {
         return HttpResponse.json({ detail: 'invalid_refresh' }, { status: 401 });
       })
     );
