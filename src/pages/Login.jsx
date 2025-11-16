@@ -1,4 +1,4 @@
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth, isUserAdmin } from '../contexts/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useState } from 'react';
 
@@ -8,7 +8,7 @@ import { useState } from 'react';
 //   whether their credentials are invalid or the server returned something else
 
 export default function LoginPage() {
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,7 +16,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   if (isAuthenticated) {
-    return <Navigate to="/app" replace />;
+    return <Navigate to={isAdmin ? '/admin' : '/app'} replace />;
   }
 
   const handleSubmit = async (e) => {
@@ -26,7 +26,8 @@ export default function LoginPage() {
     const result = await login({ email, password });
     setLoading(false);
     if (result.ok) {
-      navigate('/app');
+      const destination = isUserAdmin(result.user) ? '/admin' : '/app';
+      navigate(destination);
     } else {
       const err = result.error;
       if (err.nonFieldErrors) setError(err.nonFieldErrors.join(' '));

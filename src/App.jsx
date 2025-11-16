@@ -6,29 +6,38 @@ import LoginPage from './pages/Login.jsx';
 import RegisterPage from './pages/Register.jsx';
 import SweetDetailPage from './pages/SweetDetail.jsx';
 import AdminDashboard from './pages/admin/AdminDashboard.jsx';
-import { ProtectedRoute, AdminRoute, useAuth } from './contexts/AuthContext.jsx';
+import { AdminRoute, CustomerRoute, useAuth } from './contexts/AuthContext.jsx';
 
 function AppLayout() {
   const { user, logout, isAuthenticated, isAdmin } = useAuth();
+  const showHomeLink = !isAuthenticated || !isAdmin;
+  const showDashboardLink = isAuthenticated && !isAdmin;
+  const showAdminLink = isAdmin;
+  const brandNode = isAdmin ? (
+    <span className="brand brand-static" aria-label="SweetShop admin">SweetShop</span>
+  ) : (
+    <NavLink to="/" className="brand">
+      SweetShop
+    </NavLink>
+  );
 
   return (
     <div className="app-shell">
       <header className="app-bar">
-        <NavLink to="/" className="brand">
-          SweetShop
-        </NavLink>
+        {brandNode}
         <nav>
-          <NavLink to="/" end>
-            Home
-          </NavLink>
-          {isAuthenticated ? (
-            <>
-              <NavLink to="/app">Dashboard</NavLink>
-              <NavLink to="/admin" className={({ isActive }) => (isAdmin && isActive ? 'active' : undefined)}>
-                Admin
-              </NavLink>
-            </>
-          ) : (
+          {showHomeLink && (
+            <NavLink to="/" end>
+              Home
+            </NavLink>
+          )}
+          {showDashboardLink && <NavLink to="/app">Dashboard</NavLink>}
+          {showAdminLink && (
+            <NavLink to="/admin" className={({ isActive }) => (isActive ? 'active' : undefined)}>
+              Admin
+            </NavLink>
+          )}
+          {!isAuthenticated && (
             <>
               <NavLink to="/login">Login</NavLink>
               <NavLink to="/register">Register</NavLink>
@@ -60,7 +69,7 @@ function App() {
       <Route element={<AppLayout />}>
         <Route index element={<LandingPage />} />
 
-        <Route element={<ProtectedRoute />}>
+        <Route element={<CustomerRoute />}>
           <Route path="/app" element={<DashboardPage />} />
           <Route path="/sweets/:id" element={<SweetDetailPage />} />
         </Route>

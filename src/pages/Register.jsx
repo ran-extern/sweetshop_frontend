@@ -1,4 +1,4 @@
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth, isUserAdmin } from '../contexts/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useState } from 'react';
 
@@ -8,14 +8,14 @@ import { useState } from 'react';
 // - Redirects to the dashboard on successful registration
 
 export default function RegisterPage() {
-  const { register: registerUser, isAuthenticated } = useAuth();
+  const { register: registerUser, isAuthenticated, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ username: '', email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   if (isAuthenticated) {
-    return <Navigate to="/app" replace />;
+    return <Navigate to={isAdmin ? '/admin' : '/app'} replace />;
   }
 
   const handleChange = (e) => {
@@ -30,7 +30,8 @@ export default function RegisterPage() {
     const result = await registerUser(form);
     setLoading(false);
     if (result.ok) {
-      navigate('/app');
+      const destination = isUserAdmin(result.user) ? '/admin' : '/app';
+      navigate(destination);
     } else {
       // result.error is parsed DRF error shape
       const err = result.error;

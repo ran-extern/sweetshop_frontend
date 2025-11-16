@@ -17,6 +17,18 @@ import * as api from '../lib/api';
 
 const AuthContext = createContext(null);
 
+export const isUserAdmin = (user) => {
+  if (!user) return false;
+  if (user.role === 'admin') return true;
+  if (Array.isArray(user.roles)) {
+    return user.roles.includes('admin');
+  }
+  if (user.roles && typeof user.roles.includes === 'function') {
+    return user.roles.includes('admin');
+  }
+  return false;
+};
+
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
   const [user, setUser] = useState(() => api.getCachedUserProfile() || api.getUserFromAccess() || null);
@@ -39,11 +51,12 @@ export function AuthProvider({ children }) {
   const handleLogin = useCallback(async ({ email, password }) => {
     setLoading(true);
     try {
-      const { user: loggedUser } = await api.login({ email, password });
+  const { user: loggedUser } = await api.login({ email, password });
       // Prefer the server-provided user object, but fall back to decoding the
       // access token when needed for lightweight client-side checks.
-      setUser(loggedUser || api.getUserFromAccess());
-      return { ok: true };
+  const resolvedUser = loggedUser || api.getUserFromAccess();
+  setUser(resolvedUser);
+  return { ok: true, user: resolvedUser };
     } catch (err) {
       // return parsed DRF errors to callers for better UX
       const parsed = api.parseDRFErrors(err);
@@ -56,12 +69,13 @@ export function AuthProvider({ children }) {
   const handleRegister = useCallback(async ({ username, email, password }) => {
     setLoading(true);
     try {
-      const { user: newUser } = await api.register({ username, email, password });
+  const { user: newUser } = await api.register({ username, email, password });
       // After successful registration the backend returns tokens + user.
       // Persist the minimal state we need on the client and mark as
       // authenticated.
-      setUser(newUser || api.getUserFromAccess());
-      return { ok: true };
+  const resolvedUser = newUser || api.getUserFromAccess();
+  setUser(resolvedUser);
+  return { ok: true, user: resolvedUser };
     } catch (err) {
       const parsed = api.parseDRFErrors(err);
       return { ok: false, error: parsed };
@@ -82,8 +96,8 @@ export function AuthProvider({ children }) {
     user,
     setUser,
     loading,
-    isAuthenticated: !!user,
-    isAdmin: !!user && (user.role === 'admin' || (user.roles && user.roles.includes && user.roles.includes('admin'))),
+  isAuthenticated: !!user,
+  isAdmin: isUserAdmin(user),
     login: handleLogin,
     register: handleRegister,
     logout: handleLogout,
@@ -109,6 +123,13 @@ export function AdminRoute({ redirectTo = '/' }) {
   const { isAuthenticated, isAdmin } = useAuth();
   if (isAuthenticated && isAdmin) return <Outlet />;
   return <Navigate to={redirectTo} replace />;
+}
+
+export function CustomerRoute({ redirectTo = '/admin' }) {
+  const { isAuthenticated, isAdmin } = useAuth();
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (isAdmin) return <Navigate to={redirectTo} replace />;
+  return <Outlet />;
 }
 
 export default AuthContext;

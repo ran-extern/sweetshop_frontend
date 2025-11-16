@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 // Public landing page shown to first-time visitors. Highlights SweetShop
 // features and offers quick links to log in or create an account.
 export default function LandingPage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAdmin } = useAuth();
   const navigate = useNavigate();
   const featureList = [
     {
@@ -28,10 +28,10 @@ export default function LandingPage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      // Authenticated users can go straight to the dashboard experience.
-      navigate('/app', { replace: true });
+      const destination = isAdmin ? '/admin' : '/app';
+      navigate(destination, { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, isAdmin, navigate]);
 
   return (
     <main className="landing">
