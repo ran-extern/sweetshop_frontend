@@ -1,3 +1,10 @@
+/**
+ * CartContext
+ * -----------
+ * Lightweight cart state container that hydrates from localStorage, exposes
+ * helpers for adding/removing items, and shares subtotal metadata across the
+ * customer experience.
+ */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 const STORAGE_KEY = 'sweetshop_cart_v1';

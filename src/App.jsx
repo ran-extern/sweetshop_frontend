@@ -1,3 +1,10 @@
+/**
+ * App.jsx
+ * ---------
+ * Central routing hub for the SweetShop SPA. Defines the shared shell, guarded
+ * admin/customer routes, and public auth pages so every page renders within a
+ * consistent layout.
+ */
 import { Outlet, Route, Routes, Navigate, NavLink } from 'react-router-dom';
 import './App.css';
 import DashboardPage from './pages/Dashboard.jsx';

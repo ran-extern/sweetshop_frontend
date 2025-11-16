@@ -1,3 +1,5 @@
+// Detail page for a single sweet: fetches record by ID, shows info, and lets
+// the user purchase a selected quantity with minimal state.
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getSweet, purchaseSweet } from '../lib/api';

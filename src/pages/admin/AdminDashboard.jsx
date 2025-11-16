@@ -1,3 +1,5 @@
+// Admin dashboard: consolidates CRUD tooling for sweets inventory including
+// creation, restocking, and deletion flows backed by the API helpers.
 import { useEffect, useState } from 'react';
 import { listSweets, deleteSweet, restockSweet, createSweet, parseDRFErrors } from '../../lib/api';
 

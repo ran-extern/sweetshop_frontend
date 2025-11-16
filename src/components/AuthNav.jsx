@@ -1,3 +1,5 @@
+// Simple navigation bar shown on the login/register screens to mirror the
+// main site links while keeping auth pages lightweight.
 import { NavLink } from 'react-router-dom';
 
 export default function AuthNav() {

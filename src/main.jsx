@@ -1,3 +1,7 @@
+/**
+ * Entry point: mounts the React tree, wraps it with routing + global context
+ * providers, and applies the base styles for the entire SweetShop frontend.
+ */
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';

@@ -1,3 +1,5 @@
+// Customer dashboard: surfaces sweets inventory, manages quantity selection,
+// and provides the floating cart experience backed by CartContext utilities.
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { listSweets, purchaseSweet } from '../lib/api';
 import { useCart } from '../contexts/CartContext';

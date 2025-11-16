@@ -1,3 +1,7 @@
+/*
+ * Component and layout styles for the SweetShop experience, including the
+ * neumorphic panels, cart UI, and admin/dashboard treatments.
+ */
 .app-shell {
   min-height: 100vh;
   display: flex;
