@@ -11,7 +11,6 @@ import { AdminRoute, CustomerRoute, useAuth } from './contexts/AuthContext.jsx';
 function AppLayout() {
   const { user, logout, isAuthenticated, isAdmin } = useAuth();
   const showHomeLink = !isAuthenticated || !isAdmin;
-  const showDashboardLink = isAuthenticated && !isAdmin;
   const showAdminLink = isAdmin;
   const brandNode = isAdmin ? (
     <span className="brand brand-static" aria-label="SweetShop admin">SweetShop</span>
@@ -31,7 +30,6 @@ function AppLayout() {
               Home
             </NavLink>
           )}
-          {showDashboardLink && <NavLink to="/app">Dashboard</NavLink>}
           {showAdminLink && (
             <NavLink to="/admin" className={({ isActive }) => (isActive ? 'active' : undefined)}>
               Admin

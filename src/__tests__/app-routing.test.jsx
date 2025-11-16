@@ -3,12 +3,15 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import App from '../App.jsx';
 import { AuthProvider } from '../contexts/AuthContext.jsx';
+import { CartProvider } from '../contexts/CartContext.jsx';
 
 function renderApp(initialEntries = ['/']) {
   return render(
     <MemoryRouter initialEntries={initialEntries}>
       <AuthProvider>
-        <App />
+        <CartProvider>
+          <App />
+        </CartProvider>
       </AuthProvider>
     </MemoryRouter>
   );
