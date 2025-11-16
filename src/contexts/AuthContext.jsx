@@ -66,16 +66,16 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const handleRegister = useCallback(async ({ username, email, password }) => {
+  const handleRegister = useCallback(async ({ name, email, password }) => {
     setLoading(true);
     try {
-  const { user: newUser } = await api.register({ username, email, password });
+      const { user: newUser } = await api.register({ name, email, password });
       // After successful registration the backend returns tokens + user.
       // Persist the minimal state we need on the client and mark as
       // authenticated.
-  const resolvedUser = newUser || api.getUserFromAccess();
-  setUser(resolvedUser);
-  return { ok: true, user: resolvedUser };
+    const resolvedUser = newUser || api.getUserFromAccess();
+    setUser(resolvedUser);
+    return { ok: true, user: resolvedUser };
     } catch (err) {
       const parsed = api.parseDRFErrors(err);
       return { ok: false, error: parsed };

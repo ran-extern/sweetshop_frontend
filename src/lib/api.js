@@ -221,8 +221,8 @@ export async function login({ email, password }) {
   return { user, tokens };
 }
 
-export async function register({ username, email, password }) {
-  const resp = await api.post('auth/register/', { username, email, password });
+export async function register({ name, email, password }) {
+  const resp = await api.post('auth/register/', { name, email, password });
   const { tokens, user } = resp.data;
   setTokens(tokens);
   cacheUserProfile(user);

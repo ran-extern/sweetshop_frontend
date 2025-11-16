@@ -1,6 +1,7 @@
 import { useAuth, isUserAdmin } from '../contexts/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useState } from 'react';
+import AuthNav from '../components/AuthNav.jsx';
 
 // Login page
 // - Simple credential form that calls `login` from AuthContext
@@ -37,23 +38,26 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="auth-page">
-      <section className="panel">
-        <h1>Welcome back</h1>
-        <p>Sign in with your SweetShop account.</p>
-        <form onSubmit={handleSubmit}>
-          <label>
-            Email
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          </label>
-          <label>
-            Password
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          </label>
-          {error && <p className="error">{error}</p>}
-          <button type="submit" disabled={loading}>{loading ? 'Signing in…' : 'Sign in'}</button>
-        </form>
-      </section>
-    </main>
+    <>
+      <AuthNav />
+      <main className="auth-page">
+        <section className="panel">
+          <h1>Welcome back</h1>
+          <p>Sign in with your SweetShop account.</p>
+          <form onSubmit={handleSubmit}>
+            <label>
+              Email
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            </label>
+            <label>
+              Password
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            </label>
+            {error && <p className="error">{error}</p>}
+            <button type="submit" disabled={loading}>{loading ? 'Signing in…' : 'Sign in'}</button>
+          </form>
+        </section>
+      </main>
+    </>
   );
 }

@@ -5,7 +5,7 @@ import * as api from '../lib/api';
 
 const API_BASE = api.API_BASE_URL.replace(/\/+$/, '');
 
-const sampleUser = { id: 1, username: 'jdoe', email: 'jdoe@example.com', role: 'customer' };
+const sampleUser = { id: 1, name: 'Jane Doe', username: 'jdoe', email: 'jdoe@example.com', role: 'customer' };
 const sampleAdmin = { id: 2, username: 'admin', email: 'admin@example.com', role: 'admin' };
 const sampleTokens = { access: 'access_v1', refresh: 'refresh_v1' };
 
@@ -67,9 +67,9 @@ describe('api client - auth and refresh flows', () => {
     expect(localStorage.getItem('refresh_token')).toBe(sampleTokens.refresh);
   });
 
-  it('register sends username/email/password and stores tokens', async () => {
+  it('register sends name/email/password and stores tokens', async () => {
     lastRegisterBody = null;
-    const payload = { username: 'newbie', email: 'newbie@example.com', password: 'StrongPass!1' };
+    const payload = { name: 'New User', email: 'newbie@example.com', password: 'StrongPass!1' };
     const { user } = await api.register(payload);
     expect(lastRegisterBody).toEqual(payload);
     expect(user).toEqual(sampleUser);

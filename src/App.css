@@ -21,6 +21,12 @@
   z-index: 12;
 }
 
+.auth-nav {
+  position: static;
+  top: auto;
+  margin: 1rem 1.5rem;
+}
+
 .app-bar nav {
   display: flex;
   gap: 0.5rem;
