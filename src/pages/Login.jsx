@@ -23,7 +23,10 @@ export default function LoginPage() {
     if (result.ok) {
       navigate('/');
     } else {
-      setError('Unable to sign in. Check credentials.');
+      const err = result.error;
+      if (err.nonFieldErrors) setError(err.nonFieldErrors.join(' '));
+      else if (err.detail) setError(err.detail);
+      else setError('Unable to sign in. Check credentials.');
     }
   };
 

@@ -30,7 +30,9 @@ export function AuthProvider({ children }) {
       setUser(loggedUser || api.getUserFromAccess());
       return { ok: true };
     } catch (err) {
-      return { ok: false, error: err };
+      // return parsed DRF errors to callers for better UX
+      const parsed = api.parseDRFErrors(err);
+      return { ok: false, error: parsed };
     } finally {
       setLoading(false);
     }
@@ -43,7 +45,8 @@ export function AuthProvider({ children }) {
       setUser(newUser || api.getUserFromAccess());
       return { ok: true };
     } catch (err) {
-      return { ok: false, error: err };
+      const parsed = api.parseDRFErrors(err);
+      return { ok: false, error: parsed };
     } finally {
       setLoading(false);
     }

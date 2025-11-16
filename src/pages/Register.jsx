@@ -27,7 +27,13 @@ export default function RegisterPage() {
     if (result.ok) {
       navigate('/');
     } else {
-      setError('Registration failed. Please review your details.');
+      // result.error is parsed DRF error shape
+      const err = result.error;
+      if (err.nonFieldErrors) setError(err.nonFieldErrors.join(' '));
+      else if (err.username) setError(`Username: ${err.username.join(' ')}`);
+      else if (err.email) setError(`Email: ${err.email.join(' ')}`);
+      else if (err.password) setError(`Password: ${err.password.join(' ')}`);
+      else setError(JSON.stringify(err));
     }
   };
 
