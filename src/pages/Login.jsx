@@ -16,7 +16,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   if (isAuthenticated) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/app" replace />;
   }
 
   const handleSubmit = async (e) => {
@@ -26,7 +26,7 @@ export default function LoginPage() {
     const result = await login({ email, password });
     setLoading(false);
     if (result.ok) {
-      navigate('/');
+      navigate('/app');
     } else {
       const err = result.error;
       if (err.nonFieldErrors) setError(err.nonFieldErrors.join(' '));

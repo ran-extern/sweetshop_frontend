@@ -1,13 +1,24 @@
 :root {
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #1f2226;
-  background-color: #fef9f6;
+  color: var(--sweet-chocolate);
+  background-color: var(--sweet-cream);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --sweet-cream: #fff9f5;
+  --sweet-frosting: #fff4ec;
+  --sweet-rose: #ffd9c8;
+  --sweet-peach: #ffb799;
+  --sweet-berry: #b05d9c;
+  --sweet-chocolate: #3d2c2e;
+  --sweet-shadow-light: #fff1e4;
+  --sweet-shadow-dark: #d6b9a7;
+  --sweet-pistachio: #dff5e3;
+  --sweet-toast: #f8d3b3;
 }
 
 * {
@@ -17,14 +28,20 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #fef9f6;
+  background: radial-gradient(circle at top, rgba(255, 221, 200, 0.65), transparent 60%),
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.9), transparent 45%),
+    linear-gradient(135deg, #fff9f5 0%, #ffe9df 60%, #ffd4c6 100%);
+  color: var(--sweet-chocolate);
 }
 
 a {
   color: inherit;
   text-decoration: none;
+  transition: color 200ms ease, opacity 200ms ease;
 }
 
-button {
+button,
+input,
+textarea {
   font-family: inherit;
 }

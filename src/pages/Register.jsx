@@ -15,7 +15,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
 
   if (isAuthenticated) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/app" replace />;
   }
 
   const handleChange = (e) => {
@@ -30,7 +30,7 @@ export default function RegisterPage() {
     const result = await registerUser(form);
     setLoading(false);
     if (result.ok) {
-      navigate('/');
+      navigate('/app');
     } else {
       // result.error is parsed DRF error shape
       const err = result.error;

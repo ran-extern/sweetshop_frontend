@@ -15,8 +15,13 @@ function renderApp(initialEntries = ['/']) {
 }
 
 describe('App routing', () => {
-  it('redirects unauthenticated users to login', async () => {
+  it('shows the public landing experience on /', () => {
     renderApp(['/']);
+    expect(screen.getByText(/brings artisan sweets/i)).toBeInTheDocument();
+  });
+
+  it('redirects unauthenticated dashboard visits to login', async () => {
+    renderApp(['/app']);
 
     await waitFor(() => {
       expect(screen.getByText(/welcome back/i)).toBeInTheDocument();

@@ -1,6 +1,7 @@
 import { Outlet, Route, Routes, Navigate, NavLink } from 'react-router-dom';
 import './App.css';
 import DashboardPage from './pages/Dashboard.jsx';
+import LandingPage from './pages/Landing.jsx';
 import LoginPage from './pages/Login.jsx';
 import RegisterPage from './pages/Register.jsx';
 import SweetDetailPage from './pages/SweetDetail.jsx';
@@ -17,17 +18,17 @@ function AppLayout() {
           SweetShop
         </NavLink>
         <nav>
-          {isAuthenticated && (
+          <NavLink to="/" end>
+            Home
+          </NavLink>
+          {isAuthenticated ? (
             <>
-              <NavLink to="/" end>
-                Dashboard
-              </NavLink>
+              <NavLink to="/app">Dashboard</NavLink>
               <NavLink to="/admin" className={({ isActive }) => (isAdmin && isActive ? 'active' : undefined)}>
                 Admin
               </NavLink>
             </>
-          )}
-          {!isAuthenticated && (
+          ) : (
             <>
               <NavLink to="/login">Login</NavLink>
               <NavLink to="/register">Register</NavLink>
@@ -57,8 +58,10 @@ function App() {
 
       {/* Main layout */}
       <Route element={<AppLayout />}>
+        <Route index element={<LandingPage />} />
+
         <Route element={<ProtectedRoute />}>
-          <Route index element={<DashboardPage />} />
+          <Route path="/app" element={<DashboardPage />} />
           <Route path="/sweets/:id" element={<SweetDetailPage />} />
         </Route>
 
