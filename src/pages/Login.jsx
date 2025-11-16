@@ -2,6 +2,11 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useState } from 'react';
 
+// Login page
+// - Simple credential form that calls `login` from AuthContext
+// - Surface non-field or detail errors returned by the backend so users know
+//   whether their credentials are invalid or the server returned something else
+
 export default function LoginPage() {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();

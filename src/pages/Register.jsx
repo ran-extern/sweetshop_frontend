@@ -2,6 +2,11 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useState } from 'react';
 
+// Registration page
+// - Collects username/email/password and calls `register` from AuthContext
+// - Displays field-specific backend validation errors returned from the API
+// - Redirects to the dashboard on successful registration
+
 export default function RegisterPage() {
   const { register: registerUser, isAuthenticated } = useAuth();
   const navigate = useNavigate();

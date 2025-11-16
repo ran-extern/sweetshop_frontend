@@ -2,6 +2,19 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { useNavigate, Navigate, Outlet } from 'react-router-dom';
 import * as api from '../lib/api';
 
+/*
+  AuthContext
+
+  Provides application-wide authentication state and helpers:
+  - `login` / `register` wrappers that call the API module and surface
+    parsed validation errors to the UI.
+  - `logout` to clear local state and tokens.
+  - `isAuthenticated` / `isAdmin` flags useful for guarding routes.
+
+  Also includes two route wrappers that work with React Router's nested
+  `Outlet` pattern: `ProtectedRoute` (requires auth) and `AdminRoute`.
+*/
+
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
@@ -27,6 +40,8 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       const { user: loggedUser } = await api.login({ email, password });
+      // Prefer the server-provided user object, but fall back to decoding the
+      // access token when needed for lightweight client-side checks.
       setUser(loggedUser || api.getUserFromAccess());
       return { ok: true };
     } catch (err) {
@@ -42,6 +57,9 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       const { user: newUser } = await api.register({ username, email, password });
+      // After successful registration the backend returns tokens + user.
+      // Persist the minimal state we need on the client and mark as
+      // authenticated.
       setUser(newUser || api.getUserFromAccess());
       return { ok: true };
     } catch (err) {
@@ -53,6 +71,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const handleLogout = useCallback(() => {
+    // Clear stored tokens/profile and reset auth state. Redirect to login.
     api.logout();
     api.clearCachedUserProfile();
     setUser(null);

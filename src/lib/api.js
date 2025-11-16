@@ -1,6 +1,24 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
+/*
+  src/lib/api.js
+
+  Centralized API client used by the frontend. Responsibilities:
+  - Resolve the API root (from `VITE_API_BASE_URL` or a sensible fallback).
+  - Create a shared axios instance (`api`) configured with JSON headers.
+  - Attach access tokens to outgoing requests and refresh them automatically
+    when a 401 is encountered.
+  - Export helper functions for the sweets and auth endpoints used by the app.
+
+  Keep this file intentionally framework-agnostic — pages/contexts import
+  these helpers and should not reimplement request/refresh logic.
+*/
+
+// Resolve the API base URL. Prefer the Vite env var if set, otherwise use
+// a local fallback that matches the Django backend's API root. The value
+// should include a trailing slash so callers can concatenate paths like
+// `${API_BASE_URL}auth/login/`.
 const envBase = import.meta.env.VITE_API_BASE_URL;
 const fallbackBase = 'http://127.0.0.1:8000/api/';
 const normalizedBase = envBase ? (envBase.endsWith('/') ? envBase : `${envBase}/`) : fallbackBase;
@@ -10,6 +28,9 @@ const ACCESS_KEY = 'access_token';
 const REFRESH_KEY = 'refresh_token';
 const USER_KEY = 'user_profile';
 
+// Shared axios instance: all requests should use `api` so interceptors work
+// consistently (authorization headers, refresh logic, etc.). Use fully
+// qualified paths on this instance (e.g. `api.post('auth/login/', ...)`).
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -41,8 +62,11 @@ export function getUserFromAccess() {
   const token = getAccessToken();
   if (!token) return null;
   try {
+    // jwtDecode returns the decoded payload (e.g. { user_id, email, exp })
+    // which we use for light-weight client-side checks (role detection, etc.).
     return jwtDecode(token);
   } catch (err) {
+    // Decoding failed (token missing/malformed) — swallow and return null.
     console.error('Failed to decode access token', err);
     return null;
   }
@@ -92,6 +116,9 @@ async function refreshAccessToken() {
   const refresh = getRefreshToken();
   if (!refresh) throw new Error('No refresh token available');
 
+  // Use a direct axios call (not `api`) to avoid triggering the response
+  // interceptor (which itself handles 401s). This avoids recursion if the
+  // refresh endpoint returns a 401.
   const resp = await axios.post(`${API_BASE_URL}auth/token/refresh/`, { refresh }, { headers: { 'Content-Type': 'application/json', Accept: 'application/json' } });
   const { access, refresh: newRefresh } = resp.data;
   setTokens({ access, refresh: newRefresh || refresh });
@@ -110,7 +137,8 @@ api.interceptors.response.use(
 
     try {
       if (isRefreshing) {
-        // queue request until refresh finishes
+        // If a refresh is already in progress, wait for it to finish and then
+        // replay the original request with the newly-acquired access token.
         return new Promise((resolve, reject) => {
           addRefreshSubscriber((newAccess) => {
             if (!newAccess) return reject(error);
@@ -120,6 +148,8 @@ api.interceptors.response.use(
         });
       }
 
+      // Otherwise, initiate a refresh flow and replay the original request
+      // when it completes successfully.
       isRefreshing = true;
       const newAccess = await refreshAccessToken();
       isRefreshing = false;
