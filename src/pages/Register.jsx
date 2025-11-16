@@ -1,0 +1,57 @@
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate, Navigate } from 'react-router-dom';
+import { useState } from 'react';
+
+export default function RegisterPage() {
+  const { register: registerUser, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ username: '', email: '', password: '' });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    const result = await registerUser(form);
+    setLoading(false);
+    if (result.ok) {
+      navigate('/');
+    } else {
+      setError('Registration failed. Please review your details.');
+    }
+  };
+
+  return (
+    <main className="auth-page">
+      <section className="panel">
+        <h1>Create an account</h1>
+        <form onSubmit={handleSubmit}>
+          <label>
+            Username
+            <input name="username" value={form.username} onChange={handleChange} required />
+          </label>
+          <label>
+            Email
+            <input type="email" name="email" value={form.email} onChange={handleChange} required />
+          </label>
+          <label>
+            Password
+            <input type="password" name="password" value={form.password} onChange={handleChange} required />
+          </label>
+          {error && <p className="error">{error}</p>}
+          <button type="submit" disabled={loading}>{loading ? 'Signing up…' : 'Sign up'}</button>
+        </form>
+      </section>
+    </main>
+  );
+}
