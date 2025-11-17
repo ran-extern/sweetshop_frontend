@@ -107,6 +107,14 @@ Place overrides in `.env.local` (auto-loaded by Vite) or export them in your she
 - Friendly UI tweaks live in `App.css`; global variables/gradients remain in `index.css`.
 
 ## My AI Usage
+ 
+## Deployment
+
+This site is deployed and publicly available at:
+
+- https://mysweetshop.vercel.app/ (Vercel)
+
+Use this URL to preview the production build and share the site with stakeholders. If you update the API base URL or credentials, make sure the deployment's environment variables are updated in Vercel.
 
 - **Tools used:** GitHub Copilot (inline completions + diff suggestions) and ChatGPT (natural-language planning + README drafting).
 - **How they helped:** Copilot generated scaffolding for UI components (AuthNav, cart panel tweaks) and suggested test stubs, while ChatGPT acted as a pair-programmer to plan refactors, tighten copy, and produce this comprehensive README.
